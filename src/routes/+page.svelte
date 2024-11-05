@@ -10,8 +10,8 @@
 	let renderer: THREE.WebGLRenderer;
 	let doorR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let planeR: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-	let planeL: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let planeT: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 	let animationFrameId: number;
 
@@ -26,34 +26,34 @@
 		const doorgeo = new THREE.BoxGeometry(0.5, 2, 0.05);
 		const doormat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 		doorR = new THREE.Mesh(doorgeo, doormat);
-		doorR.position.set(0.25, 1, 0.25);
+		doorR.position.set(0.25, 1, -0.05);
 		scene.add(doorR);
 
 		doorL = new THREE.Mesh(doorgeo, doormat);
-		doorL.position.set(-0.25, 1, 0.25);
+		doorL.position.set(-0.25, 1, -0.05);
 		scene.add(doorL);
 
-		const planegeo = new THREE.PlaneGeometry(4, 2);
-		const planemat = new THREE.MeshBasicMaterial({ color: 0xdddddd });
-		planeR = new THREE.Mesh(planegeo, planemat);
-		planeR.position.set(2.5, 1, 0.5);
-		scene.add(planeR);
+		const wallgeo = new THREE.BoxGeometry(6, 2, 0.05);
+		const wallmat = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+		wallR = new THREE.Mesh(wallgeo, wallmat);
+		wallR.position.set(3.5, 1, 0);
+		scene.add(wallR);
 
-		planeL = new THREE.Mesh(planegeo, planemat);
-		planeL.position.set(-2.5, 1, 0.5);
-		scene.add(planeL);
+		wallL = new THREE.Mesh(wallgeo, wallmat);
+		wallL.position.set(-3.5, 1, 0);
+		scene.add(wallL);
 
-		const planegeoT = new THREE.PlaneGeometry(9, 0.4);
-		planeT = new THREE.Mesh(planegeoT, planemat);
-		planeT.position.set(0, 2.2, 0.5);
+		const wallgeoT = new THREE.BoxGeometry(13, 0.4, 0.05);
+		planeT = new THREE.Mesh(wallgeoT, wallmat);
+		planeT.position.set(0, 2.2, 0);
 		scene.add(planeT);
 
 		// Temp Grid Helper
-		const gridHelper = new THREE.GridHelper(10, 10);
+		const gridHelper = new THREE.GridHelper(15, 15);
 		scene.add(gridHelper);
 
-		camera.position.z = 5;
-		camera.position.y = 1.2;
+		camera.position.z = 4;
+		camera.position.y = 1.35;
 	};
 
 	const renderScene = () => {
@@ -66,13 +66,18 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		// if (camera.position.z > 2) {
-		// 	camera.position.z -= 0.005;
-		// }
+		if (camera.position.z > -1) {
+			camera.position.z -= 0.01;
+		} else if (camera.rotation.y < 3.14) {
+			camera.rotation.y += 0.01;
+		}
 
-		if (sec > 2 && doorL.position.x > -0.75) {
+		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
 			doorL.position.x -= 0.005;
 			doorR.position.x += 0.005;
+		} else if (sec > 8 && doorL.position.x < -0.25) {
+			doorL.position.x += 0.005;
+			doorR.position.x -= 0.005;
 		}
 
 		renderScene();

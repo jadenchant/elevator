@@ -12,7 +12,13 @@
 	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let planeT: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+	let wallT: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+	let elevWallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let elevWallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let elevWallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let elevWallFR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let elevWallFL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let animationFrameId: number;
 
 	const initScene = () => {
@@ -43,17 +49,21 @@
 		wallL.position.set(-3.5, 1, 0);
 		scene.add(wallL);
 
-		const wallgeoT = new THREE.BoxGeometry(13, 0.4, 0.05);
-		planeT = new THREE.Mesh(wallgeoT, wallmat);
-		planeT.position.set(0, 2.2, 0);
-		scene.add(planeT);
+		const wallgeoT = new THREE.BoxGeometry(13, 0.8, 0.05);
+		wallT = new THREE.Mesh(wallgeoT, wallmat);
+		wallT.position.set(0, 2.2, 0);
+		scene.add(wallT);
 
 		// Temp Grid Helper
 		const gridHelper = new THREE.GridHelper(15, 15);
 		scene.add(gridHelper);
 
 		camera.position.z = 4;
-		camera.position.y = 1.35;
+		camera.position.y = 1.3;
+
+		// Temp inside elevator
+		camera.position.z = -2;
+		camera.rotation.y = 3.14;
 	};
 
 	const renderScene = () => {
@@ -66,19 +76,20 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (camera.position.z > -1) {
-			camera.position.z -= 0.01;
-		} else if (camera.rotation.y < 3.14) {
-			camera.rotation.y += 0.01;
-		}
+		// if (camera.position.z > -1) {
+		// 	camera.position.z -= 0.01;
+		// } else if (camera.rotation.y < 3.14) {
+		// 	camera.rotation.y += 0.02;
+		// 	camera.position.x -= 0.005;
+		// }
 
-		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-			doorL.position.x -= 0.005;
-			doorR.position.x += 0.005;
-		} else if (sec > 8 && doorL.position.x < -0.25) {
-			doorL.position.x += 0.005;
-			doorR.position.x -= 0.005;
-		}
+		// if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
+		// 	doorL.position.x -= 0.005;
+		// 	doorR.position.x += 0.005;
+		// } else if (sec > 12 && doorL.position.x < -0.25) {
+		// 	doorL.position.x += 0.005;
+		// 	doorR.position.x -= 0.005;
+		// }
 
 		renderScene();
 	};

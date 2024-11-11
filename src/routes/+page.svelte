@@ -30,10 +30,15 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		const testure = new THREE.TextureLoader().load('testure.png');
-		testure.wrapS = THREE.RepeatWrapping;
-		testure.wrapT = THREE.RepeatWrapping;
-		testure.repeat.set(4, 3);
+		const bricktexture = new THREE.TextureLoader().load('bricktexture.png');
+		bricktexture.wrapS = THREE.RepeatWrapping;
+		bricktexture.wrapT = THREE.RepeatWrapping;
+		bricktexture.repeat.set(4, 3);
+
+		const walnuttexture = new THREE.TextureLoader().load('walnut.png');
+		walnuttexture.wrapS = THREE.RepeatWrapping;
+		walnuttexture.wrapT = THREE.RepeatWrapping;
+		walnuttexture.repeat.set(6, 3);
 
 		const doorgeo = new THREE.BoxGeometry(0.5, 2, 0.05);
 		const doormat = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -46,7 +51,7 @@
 		scene.add(doorL);
 
 		const wallgeo = new THREE.BoxGeometry(6, 2, 0.05);
-		const wallmat = new THREE.MeshBasicMaterial({ map: testure });
+		const wallmat = new THREE.MeshBasicMaterial({ map: bricktexture });
 		wallR = new THREE.Mesh(wallgeo, wallmat);
 		wallR.position.set(3.5, 1, 0);
 		scene.add(wallR);
@@ -62,7 +67,7 @@
 		scene.add(wallT);
 
 		const lbfloorgeo = new THREE.PlaneGeometry(17, 8);
-		const lbfloormat = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+		const lbfloormat = new THREE.MeshBasicMaterial({ map: walnuttexture });
 		lbfloor = new THREE.Mesh(lbfloorgeo, lbfloormat);
 		lbfloor.position.set(0, 0, 3.95);
 		lbfloor.rotation.x = -Math.PI / 2;
@@ -100,8 +105,8 @@
 		scene.add(elevWallFT);
 
 		// Temp Grid Helper
-		const gridHelper = new THREE.GridHelper(15, 15);
-		scene.add(gridHelper);
+		// const gridHelper = new THREE.GridHelper(15, 15);
+		// scene.add(gridHelper);
 
 		camera.position.z = 3.5;
 		camera.position.y = 1.3;

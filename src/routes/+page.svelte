@@ -131,22 +131,22 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		// if (sec > 0.6) {
-		// 	if (camera.position.z > -1.2) {
-		// 		camera.position.z -= 0.01;
-		// 	} else if (camera.rotation.y < Math.PI) {
-		// 		camera.rotation.y += 0.02;
-		// 		camera.position.x -= 0.005;
-		// 	}
-		// }
+		if (sec > 0.6) {
+			if (camera.position.z > -1.2) {
+				camera.position.z -= 0.01;
+			} else if (camera.rotation.y < Math.PI) {
+				camera.rotation.y += 0.02;
+				camera.position.x -= 0.005;
+			}
+		}
 
-		// if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-		// 	doorL.position.x -= 0.005;
-		// 	doorR.position.x += 0.005;
-		// } else if (sec > 12 && doorL.position.x < -0.25) {
-		// 	doorL.position.x += 0.005;
-		// 	doorR.position.x -= 0.005;
-		// }
+		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
+			doorL.position.x -= 0.005;
+			doorR.position.x += 0.005;
+		} else if (sec > 12 && doorL.position.x < -0.25) {
+			doorL.position.x += 0.005;
+			doorR.position.x -= 0.005;
+		}
 
 		renderScene();
 	};

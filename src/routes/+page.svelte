@@ -12,7 +12,8 @@
 	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let wallT: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let lbfloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 	let elevWallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let elevWallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
 	let elevWallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
@@ -54,11 +55,18 @@
 		wallL.position.set(-3.5, 1, 0);
 		scene.add(wallL);
 
-		const wallgeoT = new THREE.BoxGeometry(13, 0.8, 0.05);
-		const wallTMaterial = new THREE.MeshBasicMaterial({ color: 0xdddddd });
-		wallT = new THREE.Mesh(wallgeoT, wallTMaterial);
-		wallT.position.set(0, 2.2, 0);
+		const wallgeoT = new THREE.BoxGeometry(13, 2, 0.05);
+		const wallmatT = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+		wallT = new THREE.Mesh(wallgeoT, wallmatT);
+		wallT.position.set(0, 3, 0);
 		scene.add(wallT);
+
+		const lbfloorgeo = new THREE.PlaneGeometry(17, 8);
+		const lbfloormat = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+		lbfloor = new THREE.Mesh(lbfloorgeo, lbfloormat);
+		lbfloor.position.set(0, 0, 3.95);
+		lbfloor.rotation.x = -Math.PI / 2;
+		scene.add(lbfloor);
 
 		const elevWallgeo = new THREE.BoxGeometry(2.5, 2.4, 0.05);
 		const elevwallmat = new THREE.MeshBasicMaterial({ color: 0xbbbbbb });
@@ -95,7 +103,7 @@
 		const gridHelper = new THREE.GridHelper(15, 15);
 		scene.add(gridHelper);
 
-		camera.position.z = 4;
+		camera.position.z = 3.5;
 		camera.position.y = 1.3;
 
 		// Temp inside elevator
@@ -118,22 +126,22 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (sec > 0.6) {
-			if (camera.position.z > -1.2) {
-				camera.position.z -= 0.01;
-			} else if (camera.rotation.y < Math.PI) {
-				camera.rotation.y += 0.02;
-				camera.position.x -= 0.005;
-			}
-		}
+		// if (sec > 0.6) {
+		// 	if (camera.position.z > -1.2) {
+		// 		camera.position.z -= 0.01;
+		// 	} else if (camera.rotation.y < Math.PI) {
+		// 		camera.rotation.y += 0.02;
+		// 		camera.position.x -= 0.005;
+		// 	}
+		// }
 
-		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-			doorL.position.x -= 0.005;
-			doorR.position.x += 0.005;
-		} else if (sec > 12 && doorL.position.x < -0.25) {
-			doorL.position.x += 0.005;
-			doorR.position.x -= 0.005;
-		}
+		// if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
+		// 	doorL.position.x -= 0.005;
+		// 	doorR.position.x += 0.005;
+		// } else if (sec > 12 && doorL.position.x < -0.25) {
+		// 	doorL.position.x += 0.005;
+		// 	doorR.position.x -= 0.005;
+		// }
 
 		renderScene();
 	};

@@ -8,18 +8,19 @@
 	let camera: THREE.PerspectiveCamera;
 	let scene: THREE.Scene;
 	let renderer: THREE.WebGLRenderer;
-	let doorR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let lbfloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
-	let elevWallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let elevWallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let elevWallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let elevWallFR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let elevWallFL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
-	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
+	let doorR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let lbfloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
+	let elevWallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevWallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevWallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevWallFR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevWallFL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let elevFloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
 	let animationFrameId: number;
 
 	const initScene = () => {
@@ -41,7 +42,7 @@
 		walnuttexture.repeat.set(6, 3);
 
 		const doorgeo = new THREE.BoxGeometry(0.5, 2, 0.05);
-		const doormat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+		const doormat = new THREE.MeshStandardMaterial({ color: 0xffffff });
 		doorR = new THREE.Mesh(doorgeo, doormat);
 		doorR.position.set(0.25, 1, -0.05);
 		scene.add(doorR);
@@ -51,7 +52,7 @@
 		scene.add(doorL);
 
 		const wallgeo = new THREE.BoxGeometry(6, 2, 0.05);
-		const wallmat = new THREE.MeshBasicMaterial({ map: bricktexture });
+		const wallmat = new THREE.MeshStandardMaterial({ map: bricktexture });
 		wallR = new THREE.Mesh(wallgeo, wallmat);
 		wallR.position.set(3.5, 1, 0);
 		scene.add(wallR);
@@ -61,20 +62,20 @@
 		scene.add(wallL);
 
 		const wallgeoT = new THREE.BoxGeometry(13, 2, 0.05);
-		const wallmatT = new THREE.MeshBasicMaterial({ color: 0xdddddd });
+		const wallmatT = new THREE.MeshStandardMaterial({ color: 0xdddddd });
 		wallT = new THREE.Mesh(wallgeoT, wallmatT);
 		wallT.position.set(0, 3, 0);
 		scene.add(wallT);
 
 		const lbfloorgeo = new THREE.PlaneGeometry(17, 8);
-		const lbfloormat = new THREE.MeshBasicMaterial({ map: walnuttexture });
+		const lbfloormat = new THREE.MeshStandardMaterial({ map: walnuttexture });
 		lbfloor = new THREE.Mesh(lbfloorgeo, lbfloormat);
 		lbfloor.position.set(0, 0, 3.95);
 		lbfloor.rotation.x = -Math.PI / 2;
 		scene.add(lbfloor);
 
 		const elevWallgeo = new THREE.BoxGeometry(2.5, 2.4, 0.05);
-		const elevwallmat = new THREE.MeshBasicMaterial({ color: 0xbbbbbb });
+		const elevwallmat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
 		elevWallR = new THREE.Mesh(elevWallgeo, elevwallmat);
 		elevWallR.position.set(1.5, 1.2, -1.25);
 		elevWallR.rotation.y = Math.PI / 2;
@@ -104,6 +105,26 @@
 		elevWallFT.position.set(0, 2.2, -0.1);
 		scene.add(elevWallFT);
 
+		const elevFloorgeo = new THREE.PlaneGeometry(3, 3);
+		const elevFloormat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+		elevFloor = new THREE.Mesh(elevFloorgeo, elevFloormat);
+		elevFloor.position.set(0, 0, -1.55);
+		elevFloor.rotation.x = -Math.PI / 2;
+		scene.add(elevFloor);
+
+		const al = new THREE.AmbientLight(0xffffff, 0.25);
+		scene.add(al);
+
+		const lpl1 = new THREE.PointLight(0xffffff, 12, 10, 1.2);
+		lpl1.position.set(4, 6, 4);
+		const lpl1Helper = new THREE.PointLightHelper(lpl1, 0.5);
+		scene.add(lpl1, lpl1Helper);
+
+		const lpl2 = new THREE.PointLight(0xffffff, 12, 10, 1.2);
+		lpl2.position.set(-4, 6, 4);
+		const lpl2Helper = new THREE.PointLightHelper(lpl2, 0.5);
+		scene.add(lpl2, lpl2Helper);
+
 		// Temp Grid Helper
 		// const gridHelper = new THREE.GridHelper(15, 15);
 		// scene.add(gridHelper);
@@ -131,22 +152,22 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (sec > 0.6) {
-			if (camera.position.z > -1.2) {
-				camera.position.z -= 0.01;
-			} else if (camera.rotation.y < Math.PI) {
-				camera.rotation.y += 0.02;
-				camera.position.x -= 0.005;
-			}
-		}
+		// if (sec > 0.6) {
+		// 	if (camera.position.z > -1.2) {
+		// 		camera.position.z -= 0.01;
+		// 	} else if (camera.rotation.y < Math.PI) {
+		// 		camera.rotation.y += 0.02;
+		// 		camera.position.x -= 0.005;
+		// 	}
+		// }
 
-		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-			doorL.position.x -= 0.005;
-			doorR.position.x += 0.005;
-		} else if (sec > 12 && doorL.position.x < -0.25) {
-			doorL.position.x += 0.005;
-			doorR.position.x -= 0.005;
-		}
+		// if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
+		// 	doorL.position.x -= 0.005;
+		// 	doorR.position.x += 0.005;
+		// } else if (sec > 12 && doorL.position.x < -0.25) {
+		// 	doorL.position.x += 0.005;
+		// 	doorR.position.x -= 0.005;
+		// }
 
 		renderScene();
 	};

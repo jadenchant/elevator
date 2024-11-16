@@ -2,14 +2,15 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import * as THREE from 'three';
+	import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 
 	const clock = new THREE.Clock();
 
 	let camera: THREE.PerspectiveCamera;
 	let scene: THREE.Scene;
 	let renderer: THREE.WebGLRenderer;
-	let doorR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
-	let doorL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+	let doorR: Reflector;
+	let doorL: Reflector;
 	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
@@ -41,14 +42,24 @@
 		walnuttexture.wrapT = THREE.RepeatWrapping;
 		walnuttexture.repeat.set(6, 3);
 
-		const doorgeo = new THREE.BoxGeometry(0.5, 2, 0.05);
-		const doormat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-		doorR = new THREE.Mesh(doorgeo, doormat);
+		const doorgeo = new THREE.PlaneGeometry(0.5, 2);
+
+		doorR = new Reflector(doorgeo, {
+			color: new THREE.Color(0x7f7f7f),
+			textureWidth: window.innerWidth * window.devicePixelRatio,
+			textureHeight: window.innerHeight * window.devicePixelRatio
+		});
 		doorR.position.set(0.25, 1, -0.05);
+		// doorR.rotation.y = Math.PI;
 		scene.add(doorR);
 
-		doorL = new THREE.Mesh(doorgeo, doormat);
+		doorL = new Reflector(doorgeo, {
+			color: new THREE.Color(0x7f7f7f),
+			textureWidth: window.innerWidth * window.devicePixelRatio,
+			textureHeight: window.innerHeight * window.devicePixelRatio
+		});
 		doorL.position.set(-0.25, 1, -0.05);
+		// doorL.rotation.y = Math.PI;
 		scene.add(doorL);
 
 		const wallgeo = new THREE.BoxGeometry(6, 2, 0.05);
@@ -146,6 +157,8 @@
 		renderer.render(scene, camera);
 	};
 
+	let doorsRemoved = false;
+
 	const animateScene = () => {
 		animationFrameId = requestAnimationFrame(animateScene);
 
@@ -161,13 +174,21 @@
 		// 	}
 		// }
 
-		// if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-		// 	doorL.position.x -= 0.005;
-		// 	doorR.position.x += 0.005;
-		// } else if (sec > 12 && doorL.position.x < -0.25) {
-		// 	doorL.position.x += 0.005;
-		// 	doorR.position.x -= 0.005;
-		// }
+		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
+			doorL.position.x -= 0.005;
+			doorR.position.x += 0.005;
+		} else if (!doorsRemoved && sec >= 8) {
+			scene.remove(doorL);
+			scene.remove(doorR);
+			doorL.geometry.dispose();
+			doorL.getRenderTarget().dispose();
+			doorR.geometry.dispose();
+			doorR.getRenderTarget().dispose();
+			doorsRemoved = true;
+		} else if (sec > 12 && doorL.position.x < -0.25) {
+			doorL.position.x += 0.005;
+			doorR.position.x -= 0.005;
+		}
 
 		renderScene();
 	};

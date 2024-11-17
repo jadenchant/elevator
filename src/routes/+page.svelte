@@ -9,8 +9,10 @@
 	let camera: THREE.PerspectiveCamera;
 	let scene: THREE.Scene;
 	let renderer: THREE.WebGLRenderer;
-	let doorR: Reflector;
-	let doorL: Reflector;
+	let doorRF: Reflector;
+	let doorLF: Reflector;
+	let doorRB: Reflector;
+	let doorLB: Reflector;
 	let wallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
@@ -44,23 +46,37 @@
 
 		const doorgeo = new THREE.PlaneGeometry(0.5, 2);
 
-		doorR = new Reflector(doorgeo, {
+		doorRF = new Reflector(doorgeo, {
 			color: new THREE.Color(0x7f7f7f),
-			textureWidth: window.innerWidth * window.devicePixelRatio,
-			textureHeight: window.innerHeight * window.devicePixelRatio
+			textureWidth: (window.innerWidth * window.devicePixelRatio) / 2,
+			textureHeight: (window.innerHeight * window.devicePixelRatio) / 2
 		});
-		doorR.position.set(0.25, 1, -0.05);
-		// doorR.rotation.y = Math.PI;
-		scene.add(doorR);
+		doorRF.position.set(0.25, 1, -0.05);
+		scene.add(doorRF);
 
-		doorL = new Reflector(doorgeo, {
+		doorLF = new Reflector(doorgeo, {
 			color: new THREE.Color(0x7f7f7f),
-			textureWidth: window.innerWidth * window.devicePixelRatio,
-			textureHeight: window.innerHeight * window.devicePixelRatio
+			textureWidth: (window.innerWidth * window.devicePixelRatio) / 2,
+			textureHeight: (window.innerHeight * window.devicePixelRatio) / 2
 		});
-		doorL.position.set(-0.25, 1, -0.05);
-		// doorL.rotation.y = Math.PI;
-		scene.add(doorL);
+		doorLF.position.set(-0.25, 1, -0.05);
+		scene.add(doorLF);
+
+		doorRB = new Reflector(doorgeo, {
+			color: new THREE.Color(0x7f7f7f),
+			textureWidth: (window.innerWidth * window.devicePixelRatio) / 2,
+			textureHeight: (window.innerHeight * window.devicePixelRatio) / 2
+		});
+		doorRB.position.set(0.75, 1, -0.1);
+		doorRB.rotation.x = Math.PI;
+
+		doorLB = new Reflector(doorgeo, {
+			color: new THREE.Color(0x7f7f7f),
+			textureWidth: (window.innerWidth * window.devicePixelRatio) / 2,
+			textureHeight: (window.innerHeight * window.devicePixelRatio) / 2
+		});
+		doorLB.position.set(-0.75, 1, -0.1);
+		doorLB.rotation.x = Math.PI;
 
 		const wallgeo = new THREE.BoxGeometry(6, 2, 0.05);
 		const wallmat = new THREE.MeshStandardMaterial({ map: bricktexture });
@@ -85,7 +101,7 @@
 		lbfloor.rotation.x = -Math.PI / 2;
 		scene.add(lbfloor);
 
-		const elevWallgeo = new THREE.BoxGeometry(2.5, 2.4, 0.05);
+		const elevWallgeo = new THREE.BoxGeometry(2.5, 3, 0.05);
 		const elevwallmat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
 		elevWallR = new THREE.Mesh(elevWallgeo, elevwallmat);
 		elevWallR.position.set(1.5, 1.2, -1.25);
@@ -97,12 +113,12 @@
 		elevWallL.rotation.y = Math.PI / 2;
 		scene.add(elevWallL);
 
-		const elevWallgeoB = new THREE.BoxGeometry(4, 2.4, 0.05);
+		const elevWallgeoB = new THREE.BoxGeometry(4, 3, 0.05);
 		elevWallB = new THREE.Mesh(elevWallgeoB, elevwallmat);
 		elevWallB.position.set(0, 1.2, -2.5);
 		scene.add(elevWallB);
 
-		const elevWallgeoF = new THREE.BoxGeometry(1, 2.4, 0.05);
+		const elevWallgeoF = new THREE.BoxGeometry(1, 3, 0.05);
 		elevWallFL = new THREE.Mesh(elevWallgeoF, elevwallmat);
 		elevWallFL.position.set(1, 1.2, -0.1);
 		scene.add(elevWallFL);
@@ -111,9 +127,9 @@
 		elevWallFR.position.set(-1, 1.2, -0.1);
 		scene.add(elevWallFR);
 
-		const elevWallgeoFT = new THREE.BoxGeometry(1, 0.4, 0.05);
+		const elevWallgeoFT = new THREE.BoxGeometry(1, 0.7, 0.05);
 		elevWallFT = new THREE.Mesh(elevWallgeoFT, elevwallmat);
-		elevWallFT.position.set(0, 2.2, -0.1);
+		elevWallFT.position.set(0, 2.35, -0.1);
 		scene.add(elevWallFT);
 
 		const elevFloorgeo = new THREE.PlaneGeometry(3, 3);
@@ -144,8 +160,8 @@
 		camera.position.y = 1.3;
 
 		// Temp inside elevator
-		// camera.position.z = -2;
-		// camera.rotation.y = Math.PI;
+		camera.position.z = -2;
+		camera.rotation.y = Math.PI;
 
 		// Temp bird view
 		// camera.position.z = 0;
@@ -157,7 +173,7 @@
 		renderer.render(scene, camera);
 	};
 
-	let doorsRemoved = false;
+	let doorsFRemoved = false;
 
 	const animateScene = () => {
 		animationFrameId = requestAnimationFrame(animateScene);
@@ -174,20 +190,22 @@
 		// 	}
 		// }
 
-		if (sec < 8 && sec > 2 && doorL.position.x > -0.75) {
-			doorL.position.x -= 0.005;
-			doorR.position.x += 0.005;
-		} else if (!doorsRemoved && sec >= 8) {
-			scene.remove(doorL);
-			scene.remove(doorR);
-			doorL.geometry.dispose();
-			doorL.getRenderTarget().dispose();
-			doorR.geometry.dispose();
-			doorR.getRenderTarget().dispose();
-			doorsRemoved = true;
-		} else if (sec > 12 && doorL.position.x < -0.25) {
-			doorL.position.x += 0.005;
-			doorR.position.x -= 0.005;
+		if (sec < 8 && sec > 2 && doorLF.position.x > -0.75) {
+			doorLF.position.x -= 0.005;
+			doorRF.position.x += 0.005;
+		} else if (!doorsFRemoved && sec >= 8) {
+			scene.remove(doorLF);
+			scene.remove(doorRF);
+			doorLF.geometry.dispose();
+			doorLF.getRenderTarget().dispose();
+			doorRF.geometry.dispose();
+			doorRF.getRenderTarget().dispose();
+			doorsFRemoved = true;
+			scene.add(doorLB);
+			scene.add(doorRB);
+		} else if (sec > 12 && doorLB.position.x < -0.25) {
+			doorLB.position.x += 0.005;
+			doorRB.position.x -= 0.005;
 		}
 
 		renderScene();

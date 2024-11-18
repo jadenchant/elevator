@@ -38,10 +38,10 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		const bricktexture = new THREE.TextureLoader().load('bricktexture.png');
-		bricktexture.wrapS = THREE.RepeatWrapping;
-		bricktexture.wrapT = THREE.RepeatWrapping;
-		bricktexture.repeat.set(5, 3);
+		const brick = new THREE.TextureLoader().load('brick.png');
+		brick.wrapS = THREE.RepeatWrapping;
+		brick.wrapT = THREE.RepeatWrapping;
+		brick.repeat.set(5, 3);
 
 		const darkconcrete = new THREE.TextureLoader().load('darkconcrete.png');
 		darkconcrete.wrapS = THREE.RepeatWrapping;
@@ -89,7 +89,7 @@
 
 		const wallgeo = new THREE.BoxGeometry(8, 2, 0.06);
 		const wallmat = new THREE.MeshPhysicalMaterial({
-			map: bricktexture,
+			map: brick,
 			roughness: 0.5,
 			metalness: 0.5,
 			clearcoat: 0.4,

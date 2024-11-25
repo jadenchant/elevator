@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import * as THREE from 'three';
+	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 	import { Reflector } from '../lib/Reflector';
 
 	const clock = new THREE.Clock();
@@ -9,6 +10,7 @@
 	let camera: THREE.PerspectiveCamera;
 	let scene: THREE.Scene;
 	let renderer: THREE.WebGLRenderer;
+	let controls: OrbitControls;
 	let doorRF: Reflector;
 	let doorLF: Reflector;
 	let doorRB: Reflector;
@@ -20,7 +22,8 @@
 	let wallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallTB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
-	let lbfloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshPhysicalMaterial>;
+	let lbFloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshPhysicalMaterial>;
+	let lbCeil: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
 	let elevWallR: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevWallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevWallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
@@ -28,6 +31,7 @@
 	let elevWallFL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevFloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
+	let elevCeil: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
 	let animationFrameId: number;
 
 	const initScene = () => {
@@ -38,6 +42,9 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
+		controls = new OrbitControls(camera, renderer.domElement);
+
+		// Textures
 		const brick = new THREE.TextureLoader().load('brick.png');
 		brick.wrapS = THREE.RepeatWrapping;
 		brick.wrapT = THREE.RepeatWrapping;
@@ -53,6 +60,7 @@
 		walnuttexture.wrapT = THREE.RepeatWrapping;
 		walnuttexture.repeat.set(6, 3);
 
+		// Elevator Doors
 		const doorgeo = new THREE.PlaneGeometry(0.5, 2);
 
 		doorRF = new Reflector(doorgeo, {
@@ -87,6 +95,7 @@
 		doorLB.position.set(-0.75, 1, -0.1);
 		doorLB.rotation.x = Math.PI;
 
+		// Lobby Walls
 		const wallgeo = new THREE.BoxGeometry(8, 2, 0.06);
 		const wallmat = new THREE.MeshPhysicalMaterial({
 			map: brick,
@@ -135,8 +144,8 @@
 		wallTB.position.set(0, 4, 7.95);
 		scene.add(wallTB);
 
-		const lbfloorgeo = new THREE.PlaneGeometry(17, 8);
-		const lbfloormat = new THREE.MeshPhysicalMaterial({
+		const lbFloorgeo = new THREE.PlaneGeometry(17, 8);
+		const lbFloormat = new THREE.MeshPhysicalMaterial({
 			map: walnuttexture,
 			roughness: 0.1,
 			metalness: 0.4,
@@ -144,27 +153,33 @@
 			clearcoatRoughness: 0.1,
 			reflectivity: 0.2
 		});
-		lbfloor = new THREE.Mesh(lbfloorgeo, lbfloormat);
-		lbfloor.position.set(0, 0, 3.95);
-		lbfloor.rotation.x = -Math.PI / 2;
-		scene.add(lbfloor);
+		lbFloor = new THREE.Mesh(lbFloorgeo, lbFloormat);
+		lbFloor.position.set(0, 0, 3.95);
+		lbFloor.rotation.x = -Math.PI / 2;
+		scene.add(lbFloor);
+
+		const lbCeilmat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+		lbCeil = new THREE.Mesh(lbFloorgeo, lbCeilmat);
+		lbCeil.position.set(0, 6, 3.95);
+		lbCeil.rotation.x = Math.PI / 2;
+		scene.add(lbCeil);
 
 		// Elevator Interior
-		const elevWallgeo = new THREE.BoxGeometry(2.5, 3, 0.05);
+		const elevWallgeo = new THREE.BoxGeometry(3, 3, 0.05);
 		const elevwallmat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
 		elevWallR = new THREE.Mesh(elevWallgeo, elevwallmat);
-		elevWallR.position.set(1.5, 1.2, -1.25);
+		elevWallR.position.set(1.5, 1.2, -1.55);
 		elevWallR.rotation.y = Math.PI / 2;
 		scene.add(elevWallR);
 
 		elevWallL = new THREE.Mesh(elevWallgeo, elevwallmat);
-		elevWallL.position.set(-1.5, 1.2, -1.25);
+		elevWallL.position.set(-1.5, 1.2, -1.55);
 		elevWallL.rotation.y = Math.PI / 2;
 		scene.add(elevWallL);
 
-		const elevWallgeoB = new THREE.BoxGeometry(4, 3, 0.05);
+		const elevWallgeoB = new THREE.BoxGeometry(3, 3, 0.05);
 		elevWallB = new THREE.Mesh(elevWallgeoB, elevwallmat);
-		elevWallB.position.set(0, 1.2, -2.5);
+		elevWallB.position.set(0, 1.2, -3.05);
 		scene.add(elevWallB);
 
 		const elevWallgeoF = new THREE.BoxGeometry(1, 3, 0.05);
@@ -223,6 +238,7 @@
 		// camera.position.z = 5;
 		// camera.position.y = 12;
 		// camera.rotation.x = -Math.PI / 2;
+		controls.update();
 	};
 
 	const renderScene = () => {
@@ -237,14 +253,14 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (sec > 0.6) {
-			if (camera.position.z > -1.2) {
-				camera.position.z -= 0.01;
-			} else if (camera.rotation.y < Math.PI) {
-				camera.rotation.y += 0.02;
-				camera.position.x -= 0.005;
-			}
-		}
+		// if (sec > 0.6) {
+		// 	if (camera.position.z > -1.2) {
+		// 		camera.position.z -= 0.01;
+		// 	} else if (camera.rotation.y < Math.PI) {
+		// 		camera.rotation.y += 0.02;
+		// 		camera.position.x -= 0.005;
+		// 	}
+		// }
 
 		if (sec < 8 && sec > 2 && doorLF.position.x > -0.75) {
 			doorLF.position.x -= 0.005;
@@ -264,6 +280,7 @@
 			doorRB.position.x -= 0.005;
 		}
 
+		controls.update();
 		renderScene();
 	};
 

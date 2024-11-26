@@ -19,6 +19,8 @@
 	let wallL: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallEnter: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallExit: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let wallEnterT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let wallExitT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let wallTB: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
@@ -42,7 +44,7 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		// controls = new OrbitControls(camera, renderer.domElement);
+		controls = new OrbitControls(camera, renderer.domElement);
 
 		// Textures
 		const brick = new THREE.TextureLoader().load('brick.png');
@@ -144,6 +146,17 @@
 		wallTB.position.set(0, 4, 7.95);
 		scene.add(wallTB);
 
+		const wallEgeoT = new THREE.BoxGeometry(8, 4, 0.05);
+		wallEnterT = new THREE.Mesh(wallEgeoT, wallmatT);
+		wallEnterT.position.set(-8.5, 4, 4);
+		wallEnterT.rotation.y = Math.PI / 2;
+		scene.add(wallEnterT);
+
+		wallExitT = new THREE.Mesh(wallEgeoT, wallmatT);
+		wallExitT.position.set(8.5, 4, 4);
+		wallExitT.rotation.y = Math.PI / 2;
+		scene.add(wallExitT);
+
 		const lbFloorgeo = new THREE.PlaneGeometry(17, 8);
 		const lbFloormat = new THREE.MeshPhysicalMaterial({
 			map: walnuttexture,
@@ -158,7 +171,14 @@
 		lbFloor.rotation.x = -Math.PI / 2;
 		scene.add(lbFloor);
 
-		const lbCeilmat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+		const lbCeilmat = new THREE.MeshPhysicalMaterial({
+			color: 0xd9d9d9,
+			roughness: 0.5,
+			metalness: 0.1,
+			clearcoat: 0.4,
+			clearcoatRoughness: 0.1
+		});
+		// const lbCeilmat = new THREE.MeshStandardMaterial({ color: 0xaf0000 });
 		lbCeil = new THREE.Mesh(lbFloorgeo, lbCeilmat);
 		lbCeil.position.set(0, 6, 3.95);
 		lbCeil.rotation.x = Math.PI / 2;
@@ -168,32 +188,32 @@
 		const elevWallgeo = new THREE.BoxGeometry(3, 3, 0.05);
 		const elevwallmat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
 		elevWallR = new THREE.Mesh(elevWallgeo, elevwallmat);
-		elevWallR.position.set(1.5, 1.2, -1.55);
+		elevWallR.position.set(1.5, 1.5, -1.55);
 		elevWallR.rotation.y = Math.PI / 2;
 		scene.add(elevWallR);
 
 		elevWallL = new THREE.Mesh(elevWallgeo, elevwallmat);
-		elevWallL.position.set(-1.5, 1.2, -1.55);
+		elevWallL.position.set(-1.5, 1.5, -1.55);
 		elevWallL.rotation.y = Math.PI / 2;
 		scene.add(elevWallL);
 
 		const elevWallgeoB = new THREE.BoxGeometry(3, 3, 0.05);
 		elevWallB = new THREE.Mesh(elevWallgeoB, elevwallmat);
-		elevWallB.position.set(0, 1.2, -3.05);
+		elevWallB.position.set(0, 1.5, -3.05);
 		scene.add(elevWallB);
 
 		const elevWallgeoF = new THREE.BoxGeometry(1, 3, 0.05);
 		elevWallFL = new THREE.Mesh(elevWallgeoF, elevwallmat);
-		elevWallFL.position.set(1, 1.2, -0.1);
+		elevWallFL.position.set(1, 1.5, -0.1);
 		scene.add(elevWallFL);
 
 		elevWallFR = new THREE.Mesh(elevWallgeoF, elevwallmat);
-		elevWallFR.position.set(-1, 1.2, -0.1);
+		elevWallFR.position.set(-1, 1.5, -0.1);
 		scene.add(elevWallFR);
 
-		const elevWallgeoFT = new THREE.BoxGeometry(1, 0.7, 0.05);
+		const elevWallgeoFT = new THREE.BoxGeometry(1, 1, 0.05);
 		elevWallFT = new THREE.Mesh(elevWallgeoFT, elevwallmat);
-		elevWallFT.position.set(0, 2.35, -0.1);
+		elevWallFT.position.set(0, 2.5, -0.1);
 		scene.add(elevWallFT);
 
 		const elevFloorgeo = new THREE.PlaneGeometry(3, 3);
@@ -202,6 +222,12 @@
 		elevFloor.position.set(0, 0, -1.55);
 		elevFloor.rotation.x = -Math.PI / 2;
 		scene.add(elevFloor);
+
+		const elevCeilmat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+		elevCeil = new THREE.Mesh(elevFloorgeo, elevCeilmat);
+		elevCeil.position.set(0, 3, -1.55);
+		elevCeil.rotation.x = Math.PI / 2;
+		scene.add(elevCeil);
 
 		// Lighting
 		const al = new THREE.AmbientLight(0xffffff, 0.25);
@@ -235,10 +261,10 @@
 		// camera.rotation.x = -Math.PI / 2;
 
 		// Temp bird view lobby
-		// camera.position.z = 5;
-		// camera.position.y = 12;
+		// camera.position.z = 10;
+		// camera.position.y = 16;
 		// camera.rotation.x = -Math.PI / 2;
-		// controls.update();
+		controls.update();
 	};
 
 	const renderScene = () => {
@@ -253,14 +279,14 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (sec > 3.5) {
-			if (camera.position.z > -1.2) {
-				camera.position.z -= 0.01;
-			} else if (camera.rotation.y < Math.PI) {
-				camera.rotation.y += 0.02;
-				camera.position.x -= 0.005;
-			}
-		}
+		// if (sec > 3.5) {
+		// 	if (camera.position.z > -1.2) {
+		// 		camera.position.z -= 0.01;
+		// 	} else if (camera.rotation.y < Math.PI) {
+		// 		camera.rotation.y += 0.02;
+		// 		camera.position.x -= 0.005;
+		// 	}
+		// }
 
 		if (sec < 12 && sec > 4 && doorLF.position.x > -0.75) {
 			doorLF.position.x -= 0.005;
@@ -280,7 +306,7 @@
 			doorRB.position.x -= 0.005;
 		}
 
-		// controls.update();
+		controls.update();
 		renderScene();
 	};
 

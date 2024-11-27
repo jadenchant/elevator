@@ -178,7 +178,6 @@
 			clearcoat: 0.4,
 			clearcoatRoughness: 0.1
 		});
-		// const lbCeilmat = new THREE.MeshStandardMaterial({ color: 0xaf0000 });
 		lbCeil = new THREE.Mesh(lbFloorgeo, lbCeilmat);
 		lbCeil.position.set(0, 6, 3.95);
 		lbCeil.rotation.x = Math.PI / 2;
@@ -241,9 +240,9 @@
 		lpl2.position.set(-4, 6, 4);
 		scene.add(lpl2);
 
-		// Temp Grid Helper
-		// const gridHelper = new THREE.GridHelper(15, 15);
-		// scene.add(gridHelper);
+		const lpl3 = new THREE.PointLight(0xffffff, 0.8, 2, 1);
+		lpl3.position.set(0, 2.9, -1.5);
+		scene.add(lpl3);
 
 		camera.position.z = 3.5;
 		camera.position.y = 1.3;

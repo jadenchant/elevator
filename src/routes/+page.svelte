@@ -34,6 +34,9 @@
 	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevFloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
 	let elevCeil: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
+	let lpl1: THREE.PointLight;
+	let lpl2: THREE.PointLight;
+	let lpl3: THREE.PointLight;
 	let animationFrameId: number;
 
 	const initScene = () => {
@@ -44,7 +47,7 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		controls = new OrbitControls(camera, renderer.domElement);
+		// controls = new OrbitControls(camera, renderer.domElement);
 
 		// Textures
 		const brick = new THREE.TextureLoader().load('brick.png');
@@ -61,6 +64,11 @@
 		walnuttexture.wrapS = THREE.RepeatWrapping;
 		walnuttexture.wrapT = THREE.RepeatWrapping;
 		walnuttexture.repeat.set(6, 3);
+
+		const marbletexture = new THREE.TextureLoader().load('marble.png');
+		marbletexture.wrapS = THREE.RepeatWrapping;
+		marbletexture.wrapT = THREE.RepeatWrapping;
+		marbletexture.repeat.set(2, 2);
 
 		// Elevator Doors
 		const doorgeo = new THREE.PlaneGeometry(0.5, 2);
@@ -216,7 +224,13 @@
 		scene.add(elevWallFT);
 
 		const elevFloorgeo = new THREE.PlaneGeometry(3, 3);
-		const elevFloormat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+		const elevFloormat = new THREE.MeshPhysicalMaterial({
+			map: marbletexture,
+			roughness: 0.3,
+			metalness: 0.5,
+			clearcoat: 0.8,
+			clearcoatRoughness: 0.4
+		});
 		elevFloor = new THREE.Mesh(elevFloorgeo, elevFloormat);
 		elevFloor.position.set(0, 0, -1.55);
 		elevFloor.rotation.x = -Math.PI / 2;
@@ -232,15 +246,15 @@
 		const al = new THREE.AmbientLight(0xffffff, 0.25);
 		scene.add(al);
 
-		const lpl1 = new THREE.PointLight(0xffffff, 12, 12, 1.2);
+		lpl1 = new THREE.PointLight(0xffffff, 18, 10, 1.2);
 		lpl1.position.set(4, 6, 4);
 		scene.add(lpl1);
 
-		const lpl2 = new THREE.PointLight(0xffffff, 12, 12, 1.2);
+		lpl2 = new THREE.PointLight(0xffffff, 18, 10, 1.2);
 		lpl2.position.set(-4, 6, 4);
 		scene.add(lpl2);
 
-		const lpl3 = new THREE.PointLight(0xffffff, 0.8, 2, 1);
+		lpl3 = new THREE.PointLight(0xffffff, 7, 5, 1.2);
 		lpl3.position.set(0, 2.9, -1.5);
 		scene.add(lpl3);
 
@@ -263,7 +277,7 @@
 		// camera.position.z = 10;
 		// camera.position.y = 16;
 		// camera.rotation.x = -Math.PI / 2;
-		controls.update();
+		// controls.update();
 	};
 
 	const renderScene = () => {
@@ -271,6 +285,7 @@
 	};
 
 	let doorsFRemoved = false;
+	let lplRemoved = false;
 
 	const animateScene = () => {
 		animationFrameId = requestAnimationFrame(animateScene);
@@ -278,14 +293,14 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		// if (sec > 3.5) {
-		// 	if (camera.position.z > -1.2) {
-		// 		camera.position.z -= 0.01;
-		// 	} else if (camera.rotation.y < Math.PI) {
-		// 		camera.rotation.y += 0.02;
-		// 		camera.position.x -= 0.005;
-		// 	}
-		// }
+		if (sec > 3.5) {
+			if (camera.position.z > -1.2) {
+				camera.position.z -= 0.01;
+			} else if (camera.rotation.y < Math.PI) {
+				camera.rotation.y += 0.02;
+				camera.position.x -= 0.005;
+			}
+		}
 
 		if (sec < 12 && sec > 4 && doorLF.position.x > -0.75) {
 			doorLF.position.x -= 0.005;
@@ -303,9 +318,13 @@
 		} else if (sec > 16 && doorLB.position.x < -0.25) {
 			doorLB.position.x += 0.005;
 			doorRB.position.x -= 0.005;
+			if (!lplRemoved && doorLB.position.x > -0.4) {
+				scene.remove(lpl1);
+				scene.remove(lpl2);
+			}
 		}
 
-		controls.update();
+		// controls.update();
 		renderScene();
 	};
 

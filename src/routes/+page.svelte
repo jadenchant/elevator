@@ -47,7 +47,7 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		// controls = new OrbitControls(camera, renderer.domElement);
+		controls = new OrbitControls(camera, renderer.domElement);
 
 		// Textures
 		const brick = new THREE.TextureLoader().load('brick.png');
@@ -265,8 +265,8 @@
 		// camera.position.set(1, 2, 1);
 
 		// Temp inside elevator
-		// camera.position.z = -2;
-		// camera.rotation.y = Math.PI;
+		camera.position.z = -2;
+		camera.rotation.y = Math.PI;
 
 		// Temp bird view elevator
 		// camera.position.z = -1;
@@ -277,7 +277,7 @@
 		// camera.position.z = 10;
 		// camera.position.y = 16;
 		// camera.rotation.x = -Math.PI / 2;
-		// controls.update();
+		controls.update();
 	};
 
 	const renderScene = () => {
@@ -293,14 +293,14 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		if (sec > 3.5) {
-			if (camera.position.z > -1.2) {
-				camera.position.z -= 0.01;
-			} else if (camera.rotation.y < Math.PI) {
-				camera.rotation.y += 0.02;
-				camera.position.x -= 0.005;
-			}
-		}
+		// if (sec > 3.5) {
+		// 	if (camera.position.z > -1.2) {
+		// 		camera.position.z -= 0.01;
+		// 	} else if (camera.rotation.y < Math.PI) {
+		// 		camera.rotation.y += 0.02;
+		// 		camera.position.x -= 0.005;
+		// 	}
+		// }
 
 		if (sec < 12 && sec > 4 && doorLF.position.x > -0.75) {
 			doorLF.position.x -= 0.005;
@@ -309,9 +309,7 @@
 			scene.remove(doorLF);
 			scene.remove(doorRF);
 			doorLF.geometry.dispose();
-			doorLF.getRenderTarget().dispose();
 			doorRF.geometry.dispose();
-			doorRF.getRenderTarget().dispose();
 			doorsFRemoved = true;
 			scene.add(doorLB);
 			scene.add(doorRB);
@@ -324,7 +322,7 @@
 			}
 		}
 
-		// controls.update();
+		controls.update();
 		renderScene();
 	};
 

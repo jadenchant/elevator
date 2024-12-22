@@ -5,6 +5,8 @@
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 	import { Reflector } from '../lib/Reflector';
 
+	let dev = false;
+
 	const clock = new THREE.Clock();
 
 	let camera: THREE.PerspectiveCamera;
@@ -47,7 +49,9 @@
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		document.body.appendChild(renderer.domElement);
 
-		controls = new OrbitControls(camera, renderer.domElement);
+		if (dev) {
+			controls = new OrbitControls(camera, renderer.domElement);
+		}
 
 		// Textures
 		const brick = new THREE.TextureLoader().load('brick.png');
@@ -265,8 +269,8 @@
 		// camera.position.set(1, 2, 1);
 
 		// Temp inside elevator
-		camera.position.z = -2;
-		camera.rotation.y = Math.PI;
+		// camera.position.z = -2;
+		// camera.rotation.y = Math.PI;
 
 		// Temp bird view elevator
 		// camera.position.z = -1;
@@ -277,7 +281,10 @@
 		// camera.position.z = 10;
 		// camera.position.y = 16;
 		// camera.rotation.x = -Math.PI / 2;
-		controls.update();
+
+		if (dev) {
+			controls.update();
+		}
 	};
 
 	const renderScene = () => {
@@ -293,19 +300,21 @@
 		const delta = clock.getDelta();
 		const sec = clock.getElapsedTime();
 
-		// if (sec > 3.5) {
-		// 	if (camera.position.z > -1.2) {
-		// 		camera.position.z -= 0.01;
-		// 	} else if (camera.rotation.y < Math.PI) {
-		// 		camera.rotation.y += 0.02;
-		// 		camera.position.x -= 0.005;
-		// 	}
-		// }
+		const initialWait = 5;
 
-		if (sec < 12 && sec > 4 && doorLF.position.x > -0.75) {
+		if (!dev && sec > initialWait) {
+			if (camera.position.z > -1.2) {
+				camera.position.z -= 0.01;
+			} else if (camera.rotation.y < Math.PI) {
+				camera.rotation.y += 0.02;
+				camera.position.x -= 0.005;
+			}
+		}
+
+		if (sec < initialWait + 8 && sec > initialWait + 1 && doorLF.position.x > -0.75) {
 			doorLF.position.x -= 0.005;
 			doorRF.position.x += 0.005;
-		} else if (!doorsFRemoved && sec >= 12) {
+		} else if (!doorsFRemoved && sec >= initialWait + 8) {
 			scene.remove(doorLF);
 			scene.remove(doorRF);
 			doorLF.geometry.dispose();
@@ -313,16 +322,19 @@
 			doorsFRemoved = true;
 			scene.add(doorLB);
 			scene.add(doorRB);
-		} else if (sec > 16 && doorLB.position.x < -0.25) {
+		} else if (sec > initialWait + 12 && doorLB.position.x < -0.25) {
 			doorLB.position.x += 0.005;
 			doorRB.position.x -= 0.005;
-			if (!lplRemoved && doorLB.position.x > -0.4) {
+			if (!lplRemoved && doorLB.position.x >= -0.25) {
 				scene.remove(lpl1);
 				scene.remove(lpl2);
 			}
 		}
 
-		controls.update();
+		if (dev) {
+			controls.update();
+		}
+
 		renderScene();
 	};
 

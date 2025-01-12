@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import * as THREE from 'three';
 	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 	import { Reflector } from '../lib/Reflector';
 
 	let dev = false;
@@ -106,8 +107,8 @@
 
 		doorRB = new Reflector(doorGeo, {
 			color: new THREE.Color(0x7f7f7f),
-			textureWidth: (window.innerWidth * window.devicePixelRatio) / 8,
-			textureHeight: (window.innerHeight * window.devicePixelRatio) / 8
+			textureWidth: (window.innerWidth * window.devicePixelRatio) / 4,
+			textureHeight: (window.innerHeight * window.devicePixelRatio) / 4
 		});
 		doorRB.position.set(0.75, 1, -0.1);
 		doorRB.rotation.x = Math.PI;
@@ -295,6 +296,15 @@
 		elevPanel6.rotation.y = Math.PI / 2;
 		scene.add(elevPanel6);
 
+		const loader = new GLTFLoader();
+		loader.load('/buttons.gltf', (gltf) => {
+			const model = gltf.scene;
+			model.scale.set(0.4, 0.4, 0.4);
+			model.position.set(-0.9, 0.9, -0.14);
+			model.rotation.y = Math.PI;
+			scene.add(model);
+		});
+
 		// Lighting
 		const al = new THREE.AmbientLight(0xffffff, 0.25);
 		scene.add(al);
@@ -432,8 +442,39 @@
 			document.body.removeChild(renderer.domElement);
 		}
 	});
+
+	let isOpen = false;
+
+	const openModal = () => {
+		isOpen = true;
+	};
+
+	const closeModal = () => {
+		isOpen = false;
+	};
 </script>
 
 <svelte:head>
 	<title>Elevator</title>
 </svelte:head>
+
+<button on:click={() => openModal()} class="absolute bottom-0 right-0 p-3 text-slate-200"
+	>Credit</button
+>
+{#if isOpen}
+	<button
+		class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60"
+		on:click={closeModal}
+		on:keydown={(e) => e.key === 'Enter' && closeModal()}
+		aria-label="Close modal"
+	>
+		<div class="flex flex-col rounded-lg bg-slate-200 p-6 shadow-lg" on:click|stopPropagation>
+			<h2 class="mb-4 text-xl font-bold">Credit</h2>
+			<a class="mb-2 underline" href="https://lightbeans.com/">Textures by lightbeans</a>
+			<a class="mb-2 underline" href="https://skfb.ly/p7DVX"
+				>"Elevator Control Panel" by dev.mansaf</a
+			>
+			<a class="mb-2 underline" href="https://jadenchant.com">Created by Jaden Chant</a>
+		</div>
+	</button>
+{/if}

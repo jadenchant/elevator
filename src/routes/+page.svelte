@@ -36,6 +36,12 @@
 	let elevWallFT: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
 	let elevFloor: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
 	let elevCeil: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshStandardMaterial>;
+	let elevPanel1: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let elevPanel2: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let elevPanel3: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let elevPanel4: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let elevPanel5: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
+	let elevPanel6: THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>;
 	let lpl1: THREE.PointLight;
 	let lpl2: THREE.PointLight;
 	let lpl3: THREE.PointLight;
@@ -54,15 +60,15 @@
 		}
 
 		// Textures
-		const brick = new THREE.TextureLoader().load('brick.png');
-		brick.wrapS = THREE.RepeatWrapping;
-		brick.wrapT = THREE.RepeatWrapping;
-		brick.repeat.set(5, 3);
+		const bricktexture = new THREE.TextureLoader().load('brick.png');
+		bricktexture.wrapS = THREE.RepeatWrapping;
+		bricktexture.wrapT = THREE.RepeatWrapping;
+		bricktexture.repeat.set(5, 3);
 
-		const darkconcrete = new THREE.TextureLoader().load('darkconcrete.png');
-		darkconcrete.wrapS = THREE.RepeatWrapping;
-		darkconcrete.wrapT = THREE.RepeatWrapping;
-		darkconcrete.repeat.set(11, 5);
+		const darkconcretetexture = new THREE.TextureLoader().load('darkconcrete.png');
+		darkconcretetexture.wrapS = THREE.RepeatWrapping;
+		darkconcretetexture.wrapT = THREE.RepeatWrapping;
+		darkconcretetexture.repeat.set(11, 5);
 
 		const walnuttexture = new THREE.TextureLoader().load('walnut.png');
 		walnuttexture.wrapS = THREE.RepeatWrapping;
@@ -74,10 +80,15 @@
 		marbletexture.wrapT = THREE.RepeatWrapping;
 		marbletexture.repeat.set(2, 2);
 
-		// Elevator Doors
-		const doorgeo = new THREE.PlaneGeometry(0.5, 2);
+		const darkwoodpaneltexture = new THREE.TextureLoader().load('panel.png');
+		marbletexture.wrapS = THREE.RepeatWrapping;
+		marbletexture.wrapT = THREE.RepeatWrapping;
+		marbletexture.repeat.set(1, 1);
 
-		doorRF = new Reflector(doorgeo, {
+		// Elevator Doors
+		const doorGeo = new THREE.PlaneGeometry(0.5, 2);
+
+		doorRF = new Reflector(doorGeo, {
 			textureWidth: (window.innerWidth * window.devicePixelRatio) / 16,
 			textureHeight: (window.innerHeight * window.devicePixelRatio) / 16,
 			color: new THREE.Color(0x7f7f7f)
@@ -85,7 +96,7 @@
 		doorRF.position.set(0.25, 1, -0.05);
 		scene.add(doorRF);
 
-		doorLF = new Reflector(doorgeo, {
+		doorLF = new Reflector(doorGeo, {
 			color: new THREE.Color(0x7f7f7f),
 			textureWidth: (window.innerWidth * window.devicePixelRatio) / 16,
 			textureHeight: (window.innerHeight * window.devicePixelRatio) / 16
@@ -93,7 +104,7 @@
 		doorLF.position.set(-0.25, 1, -0.05);
 		scene.add(doorLF);
 
-		doorRB = new Reflector(doorgeo, {
+		doorRB = new Reflector(doorGeo, {
 			color: new THREE.Color(0x7f7f7f),
 			textureWidth: (window.innerWidth * window.devicePixelRatio) / 8,
 			textureHeight: (window.innerHeight * window.devicePixelRatio) / 8
@@ -101,7 +112,7 @@
 		doorRB.position.set(0.75, 1, -0.1);
 		doorRB.rotation.x = Math.PI;
 
-		doorLB = new Reflector(doorgeo, {
+		doorLB = new Reflector(doorGeo, {
 			color: new THREE.Color(0x7f7f7f),
 			textureWidth: (window.innerWidth * window.devicePixelRatio) / 4,
 			textureHeight: (window.innerHeight * window.devicePixelRatio) / 4
@@ -110,41 +121,41 @@
 		doorLB.rotation.x = Math.PI;
 
 		// Lobby Walls
-		const wallgeo = new THREE.BoxGeometry(8, 2, 0.06);
-		const wallmat = new THREE.MeshPhysicalMaterial({
-			map: brick,
+		const wallGeo = new THREE.BoxGeometry(8, 2, 0.06);
+		const wallMat = new THREE.MeshPhysicalMaterial({
+			map: bricktexture,
 			roughness: 0.5,
 			metalness: 0.5,
 			clearcoat: 0.4,
 			clearcoatRoughness: 0.1
 		});
-		wallR = new THREE.Mesh(wallgeo, wallmat);
+		wallR = new THREE.Mesh(wallGeo, wallMat);
 		wallR.position.set(4.5, 1, 0.02);
 		scene.add(wallR);
 
-		wallL = new THREE.Mesh(wallgeo, wallmat);
+		wallL = new THREE.Mesh(wallGeo, wallMat);
 		wallL.position.set(-4.5, 1, 0);
 		scene.add(wallL);
 
-		const wallEgeo = new THREE.BoxGeometry(8, 2, 0.05);
-		wallEnter = new THREE.Mesh(wallEgeo, wallmat);
+		const wallEGeo = new THREE.BoxGeometry(8, 2, 0.05);
+		wallEnter = new THREE.Mesh(wallEGeo, wallMat);
 		wallEnter.position.set(-8.5, 1, 4);
 		wallEnter.rotation.y = Math.PI / 2;
 		scene.add(wallEnter);
 
-		wallExit = new THREE.Mesh(wallEgeo, wallmat);
+		wallExit = new THREE.Mesh(wallEGeo, wallMat);
 		wallExit.position.set(8.5, 1, 4);
 		wallExit.rotation.y = Math.PI / 2;
 		scene.add(wallExit);
 
-		const wallBgeo = new THREE.BoxGeometry(17, 2, 0.05);
-		wallB = new THREE.Mesh(wallBgeo, wallmat);
+		const wallBGeo = new THREE.BoxGeometry(17, 2, 0.05);
+		wallB = new THREE.Mesh(wallBGeo, wallMat);
 		wallB.position.set(0, 1, 7.95);
 		scene.add(wallB);
 
 		const wallgeoT = new THREE.BoxGeometry(17, 4, 0.05);
 		const wallmatT = new THREE.MeshPhysicalMaterial({
-			map: darkconcrete,
+			map: darkconcretetexture,
 			roughness: 0.5,
 			metalness: 0.1,
 			clearcoat: 0.1,
@@ -169,8 +180,8 @@
 		wallExitT.rotation.y = Math.PI / 2;
 		scene.add(wallExitT);
 
-		const lbFloorgeo = new THREE.PlaneGeometry(17, 8);
-		const lbFloormat = new THREE.MeshPhysicalMaterial({
+		const lbFloorGeo = new THREE.PlaneGeometry(17, 8);
+		const lbFloorMat = new THREE.MeshPhysicalMaterial({
 			map: walnuttexture,
 			roughness: 0.1,
 			metalness: 0.4,
@@ -178,73 +189,111 @@
 			clearcoatRoughness: 0.1,
 			reflectivity: 0.2
 		});
-		lbFloor = new THREE.Mesh(lbFloorgeo, lbFloormat);
+		lbFloor = new THREE.Mesh(lbFloorGeo, lbFloorMat);
 		lbFloor.position.set(0, 0, 3.95);
 		lbFloor.rotation.x = -Math.PI / 2;
 		scene.add(lbFloor);
 
-		const lbCeilmat = new THREE.MeshPhysicalMaterial({
+		const lbCeilMat = new THREE.MeshPhysicalMaterial({
 			color: 0xd9d9d9,
 			roughness: 0.5,
 			metalness: 0.1,
 			clearcoat: 0.4,
 			clearcoatRoughness: 0.1
 		});
-		lbCeil = new THREE.Mesh(lbFloorgeo, lbCeilmat);
+		lbCeil = new THREE.Mesh(lbFloorGeo, lbCeilMat);
 		lbCeil.position.set(0, 6, 3.95);
 		lbCeil.rotation.x = Math.PI / 2;
 		scene.add(lbCeil);
 
 		// Elevator Interior
-		const elevWallgeo = new THREE.BoxGeometry(3, 3, 0.05);
-		const elevwallmat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
-		elevWallR = new THREE.Mesh(elevWallgeo, elevwallmat);
+		const elevWallGeo = new THREE.BoxGeometry(3, 3, 0.05);
+		const elevwallMat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb });
+		elevWallR = new THREE.Mesh(elevWallGeo, elevwallMat);
 		elevWallR.position.set(1.5, 1.5, -1.55);
 		elevWallR.rotation.y = Math.PI / 2;
 		scene.add(elevWallR);
 
-		elevWallL = new THREE.Mesh(elevWallgeo, elevwallmat);
+		elevWallL = new THREE.Mesh(elevWallGeo, elevwallMat);
 		elevWallL.position.set(-1.5, 1.5, -1.55);
 		elevWallL.rotation.y = Math.PI / 2;
 		scene.add(elevWallL);
 
 		const elevWallgeoB = new THREE.BoxGeometry(3, 3, 0.05);
-		elevWallB = new THREE.Mesh(elevWallgeoB, elevwallmat);
+		elevWallB = new THREE.Mesh(elevWallgeoB, elevwallMat);
 		elevWallB.position.set(0, 1.5, -3.05);
 		scene.add(elevWallB);
 
 		const elevWallgeoF = new THREE.BoxGeometry(1, 3, 0.05);
-		elevWallFL = new THREE.Mesh(elevWallgeoF, elevwallmat);
+		elevWallFL = new THREE.Mesh(elevWallgeoF, elevwallMat);
 		elevWallFL.position.set(1, 1.5, -0.1);
 		scene.add(elevWallFL);
 
-		elevWallFR = new THREE.Mesh(elevWallgeoF, elevwallmat);
+		elevWallFR = new THREE.Mesh(elevWallgeoF, elevwallMat);
 		elevWallFR.position.set(-1, 1.5, -0.1);
 		scene.add(elevWallFR);
 
 		const elevWallgeoFT = new THREE.BoxGeometry(1, 1, 0.05);
-		elevWallFT = new THREE.Mesh(elevWallgeoFT, elevwallmat);
+		elevWallFT = new THREE.Mesh(elevWallgeoFT, elevwallMat);
 		elevWallFT.position.set(0, 2.5, -0.1);
 		scene.add(elevWallFT);
 
-		const elevFloorgeo = new THREE.PlaneGeometry(3, 3);
-		const elevFloormat = new THREE.MeshPhysicalMaterial({
+		const elevFloorGeo = new THREE.PlaneGeometry(3, 3);
+		const elevFloorMat = new THREE.MeshPhysicalMaterial({
 			map: marbletexture,
 			roughness: 0.3,
 			metalness: 0.5,
 			clearcoat: 0.8,
 			clearcoatRoughness: 0.4
 		});
-		elevFloor = new THREE.Mesh(elevFloorgeo, elevFloormat);
+		elevFloor = new THREE.Mesh(elevFloorGeo, elevFloorMat);
 		elevFloor.position.set(0, 0, -1.55);
 		elevFloor.rotation.x = -Math.PI / 2;
 		scene.add(elevFloor);
 
-		const elevCeilmat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
-		elevCeil = new THREE.Mesh(elevFloorgeo, elevCeilmat);
+		const elevCeilMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+		elevCeil = new THREE.Mesh(elevFloorGeo, elevCeilMat);
 		elevCeil.position.set(0, 3, -1.55);
 		elevCeil.rotation.x = Math.PI / 2;
 		scene.add(elevCeil);
+
+		// Elevator Panels
+		const elevPanelGeo = new THREE.BoxGeometry(1, 2.5, 0.07);
+		const panelMat = new THREE.MeshPhysicalMaterial({
+			map: darkwoodpaneltexture,
+			roughness: 0.6,
+			metalness: 0.3,
+			clearcoat: 0.5,
+			clearcoatRoughness: 0.3
+		});
+		elevPanel1 = new THREE.Mesh(elevPanelGeo, panelMat);
+		elevPanel2 = new THREE.Mesh(elevPanelGeo, panelMat);
+		elevPanel3 = new THREE.Mesh(elevPanelGeo, panelMat);
+		elevPanel4 = new THREE.Mesh(elevPanelGeo, panelMat);
+		elevPanel5 = new THREE.Mesh(elevPanelGeo, panelMat);
+		elevPanel6 = new THREE.Mesh(elevPanelGeo, panelMat);
+
+		elevPanel1.position.set(-1.42, 1.5, -1);
+		elevPanel1.rotation.y = Math.PI / 2;
+		scene.add(elevPanel1);
+
+		elevPanel2.position.set(-1.42, 1.5, -2.2);
+		elevPanel2.rotation.y = Math.PI / 2;
+		scene.add(elevPanel2);
+
+		elevPanel3.position.set(-0.75, 1.5, -3);
+		scene.add(elevPanel3);
+
+		elevPanel4.position.set(0.75, 1.5, -3);
+		scene.add(elevPanel4);
+
+		elevPanel5.position.set(1.42, 1.5, -2.2);
+		elevPanel5.rotation.y = Math.PI / 2;
+		scene.add(elevPanel5);
+
+		elevPanel6.position.set(1.42, 1.5, -1);
+		elevPanel6.rotation.y = Math.PI / 2;
+		scene.add(elevPanel6);
 
 		// Lighting
 		const al = new THREE.AmbientLight(0xffffff, 0.25);
@@ -273,7 +322,7 @@
 		// camera.rotation.y = Math.PI;
 
 		// Temp bird view elevator
-		// camera.position.z = -1;
+		// camera.position.z = -2;
 		// camera.position.y = 6;
 		// camera.rotation.x = -Math.PI / 2;
 
@@ -325,9 +374,33 @@
 		} else if (sec > initialWait + 12 && doorLB.position.x < -0.25) {
 			doorLB.position.x += 0.005;
 			doorRB.position.x -= 0.005;
-			if (!lplRemoved && doorLB.position.x >= -0.25) {
+			if (!dev && !lplRemoved && doorLB.position.x >= -0.25) {
 				scene.remove(lpl1);
 				scene.remove(lpl2);
+
+				// Remove Lobby
+				scene.remove(lbCeil);
+				lbCeil.geometry.dispose();
+				scene.remove(lbFloor);
+				lbFloor.geometry.dispose();
+				scene.remove(wallEnterT);
+				wallEnter.geometry.dispose();
+				scene.remove(wallExitT);
+				wallExitT.geometry.dispose();
+				scene.remove(wallT);
+				wallT.geometry.dispose();
+				scene.remove(wallTB);
+				wallTB.geometry.dispose();
+				scene.remove(wallR);
+				wallR.geometry.dispose();
+				scene.remove(wallL);
+				wallL.geometry.dispose();
+				scene.remove(wallEnter);
+				wallEnter.geometry.dispose();
+				scene.remove(wallExit);
+				wallExit.geometry.dispose();
+				scene.remove(wallB);
+				wallB.geometry.dispose();
 			}
 		}
 
